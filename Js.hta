@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>hta game</title>
+        <HTA:APPLICATION 
+            applicationname="game" 
+            border="no" 
+            singleinstance="yes" 
+            scroll="no"
+        />
+        <style>
+            body {
+                margin: 0;
+                padding: 5px;
+            }
+
+            .ga {
+                width: 845px;
+                height: 623px;
+                border: 2px dashed blueviolet;
+                background: black;
+            }
+
+            .plyr {
+                position: absolute;
+                width: 50px;
+                height: 50px;
+                margin-left: 1px;
+                top: 579px;
+                background: blue;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="gameArea" class="ga">
+            <div id="player" class="plyr"></div>
+        </div>
+    </body>
+    <script language="javascript" type="text/javascript">
+        window.onload = (function main(){
+            window.resizeTo(880, 680);
+
+            (function game(){
+                setup();
+            })();
+
+            function setup(){
+                (function playerFunctions(){
+                    function moveControls(){
+                        window.addEventListener('keydown', function(event) {
+                            switch (event.keyCode) {
+                            case 37: // Left
+                                player.offsetLeft = 20 + "px";
+                            break;
+
+                            case 38: // Up
+                                player.offsetHeight = 20 + "px";
+                            break;
+
+                            case 39: // Right
+                                player.offsetLeft = -20 + "px";
+                            break;
+
+                            case 40: // Down
+                                player.offsetHeight = -20 + "px";
+                            break;
+                            }
+                        }, false);
+                    }moveControls();
+                })();
+            }
+        })();
+    </script>
+</html>

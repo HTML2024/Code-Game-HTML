@@ -1,0 +1,1301 @@
+     <HTML>
+     
+    <HEAD>
+       <TITLE>Space Invaders 2.0 (Asteroids expansion)</TITLE>
+     
+       <HTA:APPLICATION
+       ID = "SI2.0"
+       APPLICATIONNAME = "jugador2os Socket_Client by JohnConnor"
+       BORDER = "none"
+       CAPTION = "yes"
+       ICON = "app.ico"
+       SHOWINTASKBAR = "yes"
+       SINGLEINSTANCE = "yes"
+       SYSMENU = "yes"
+       WINDOWSTATE = "maximize"
+       SCROLL = "no"
+       SCROLLFLAT = "no"
+       VERSION = "1.0"
+       INNERBORDER = "no"
+       SELECTION = "no"
+       MAXIMIZEBUTTON = "yes"
+       MINIMIZEBUTTON = "yes"
+       NAVIGABLE = "yes"
+       CONTEXTMENU = "yes"
+       BORDERSTYLE = "normal"
+       >
+    </HEAD>
+    <Style>
+             #fondo{
+     position: absolute; 
+      top: 0; 
+      left: 0; 
+      right: 0; 
+      bottom: 0; 
+      margin: auto; 
+      width: 110%;
+     height: 120%;
+     z-index: -999;
+     
+             }
+     
+             </Style>
+    <BODY BGColor="Black" Scroll="no" Width="100%" Height="100%">
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <DIV ID="Panel_Puntos">0</DIV>
+    <IMG ID="Logo1" SRC="Imagenes/logo.png">
+    <img src="Imagenes/jugador1.png" id="jugador1" title="">
+    <img src="Imagenes/jugador2.png" id="jugador2" title="">
+    <img src="Imagenes/misil.gif" id="misil0" title="">
+    <img src="Imagenes/misil.gif" id="misil1" title="">
+    <img src="Imagenes/fondo.jpg" id="fondo" title="">
+    <img src="Imagenes/meteoro.png" id="asteroide0">
+    <img src="Imagenes/meteoro.png" id="asteroide1">
+    <img src="Imagenes/meteoro.png" id="asteroide2">
+    <img src="Imagenes/meteoro.png" id="asteroide3">
+    <img src="Imagenes/meteoro.png" id="asteroide4">
+    <img src="Imagenes/meteoro.png" id="asteroide5">
+    <img src="Imagenes/meteoro.png" id="asteroide6">
+    <img src="Imagenes/meteoro.png" id="asteroide7">
+    <img src="Imagenes/meteoro.png" id="asteroide8">
+    <img src="Imagenes/meteoro.png" id="asteroide9">
+    <img id="ovni0" title="">
+    <img id="ovni1" title="">
+    <img id="ovni2" title="">
+    <img id="ovni3" title="">
+    <img id="ovni4" title="">
+     
+    <img id="navemadre0" title="">
+    <img id="navemadre1" title="">
+     
+    <img src="Imagenes/vida.png" id="objeto0">
+    <img src="Imagenes/misil.gif" id="objeto1">
+    <img src="Imagenes/escudo.png" id="objeto2" title="">
+     <BGSOUND ID="SonidosAmbiente" SRC="Sonidos/ambiente0.mp3" Volume="100" Loop="Infinite">
+    <BGSOUND ID="SonidosJuego" SRC="" Volume="200">
+    <BGSOUND ID="SonidosJugador1" SRC="" Volume="200">
+    <BGSOUND ID="SonidosObjeto" SRC="" Volume="200">
+    <BGSOUND ID="SonidosOvni" SRC="" Volume="200">
+    <BGSOUND ID="SonidosMisil" SRC="" Volume="200">
+     
+     
+    </svg>
+    </BODY>
+     
+    </HTML>
+     
+     
+    <SCRIPT LANGUAGE="VBScript">
+     
+    Dim Tiempo1,Tiempo2,Tiempo3
+    Dim TimerUnoE
+    Dim Mapa(100,100)
+    Dim PosY,PosX
+    Dim DY,DX : DY = 0 : DX = 0
+    TimerUnoE = 0
+    Dim limite
+    Dim Juego_e,Disparo_e
+    Dim Protect_e
+    Dim Puntos
+    Puntos = 0
+    Disparo_e = 0
+    limite=-10
+    Juego_e = 0 '---> No iniciado'
+    Protect_e = 0
+     
+    with Logo1.Style
+    .position = "Absolute"
+    .width = 350 : .Height = 200
+    .top = (Screen.Height / 3) - Limpiar(.height) / 2
+    .left = (Screen.Width / 2) - Limpiar(.width) / 2
+    .Display = "InLine"
+    end with
+    '-------------------------------------------------------------------------------------Jugador1'
+    with jugador1.style
+    .position = "Absolute"
+    .top = 5000
+    .left = 5000
+    .width = 50
+    .height = 50:end with
+    jugador1.title = 100
+     
+    '-------------------------------------------------------------------------------------Jugador2'
+    with jugador2.style
+    .position = "Absolute"
+    .top = 5000
+    .left = 5000
+    .width = 50
+    .height = 50:end with
+    jugador2.title = 100
+    '-------------------------------------------------------------------------------------Misil0'
+    Dim direcYmisil0
+    Dim misil0_PosY, misil0_PosX
+    direcYmisil0 = -100 : misil0_PosX = -100
+    with misil0.style
+    .position = "Absolute"
+    .top = 999
+    .left = 900
+    .width = cInt(15)
+    .height = 40
+    .zIndex = -2:end with
+    misil0.title = 0
+    '--------------------------------------------------------------------------------------Misil1'
+    misil1.style.position = "Absolute"
+    misil1.Style.Top = 999
+    misil1.Style.Left = 900
+    misil1.Style.Width = cInt(15)
+    misil1.Style.Height = 40
+    misil1.Style.zIndex = -2
+    misil1.title = 0
+    '--------------------------------------------------------------------------------------Asteroide0'
+    Dim direcYasteroide0, direcXasteroide0
+    Dim asteroide0_PosY, asteroide0_PosX
+    direcYasteroide0 = 0 : direcXasteroide0 = 0
+    with asteroide0.style
+    .position = "Absolute"
+    .top = -100  
+    .left = 1000
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide1'
+    Dim direcYasteroide1, direcXasteroide1
+    Dim asteroide1_PosY, asteroide1_PosX
+    direcYasteroide1 = 0 : direcXasteroide1 = 0
+    with asteroide1.style
+    .position = "Absolute"
+    .top = 1000
+    .left = 1000
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide2'
+    Dim direcYasteroide2, direcXasteroide2
+    Dim asteroide2_PosY, asteroide2_PosX
+    direcYasteroide2 = 0 : direcXasteroide2 = 0
+    with asteroide2.style
+    .position = "Absolute"
+    .top = 1300
+    .left = -100
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide3'
+    Dim direcYasteroide3, direcXasteroide3
+    Dim asteroide3_PosY, asteroide3_PosX
+    direcYasteroide3 = 0 : direcXasteroide3 = 0
+    with asteroide3.style
+    .position = "Absolute"
+    .top = 1300
+    .left = 1000
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide4'
+    Dim direcYasteroide4, direcXasteroide4
+    Dim asteroide4_PosY, asteroide4_PosX
+    direcYasteroide4= 0 : direcXasteroide4 = 0
+    with asteroide4.style
+    .position = "Absolute"
+    .top = -30
+    .left = -30
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide5'
+    Dim direcYasteroide5, direcXasteroide5
+    Dim asteroide5_PosY, asteroide5_PosX
+    direcYasteroide5= 0 : direcXasteroide5 = 0
+    with asteroide5.style
+    .position = "Absolute"
+    .top = -30
+    .left = -30
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide6'
+    Dim direcYasteroide6, direcXasteroide6
+    Dim asteroide6_PosY, asteroide6_PosX
+    direcYasteroide6= 0 : direcXasteroide6 = 0
+    with asteroide6.style
+    .position = "Absolute"
+    .top = -30
+    .left = -30
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide7'
+    Dim direcYasteroide7, direcXasteroide7
+    Dim asteroide7_PosY, asteroide7_PosX
+    direcYasteroide7= 0 : direcXasteroide7 = 0
+    with asteroide7.style
+    .position = "Absolute"
+    .top = -30
+    .left = -30
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide8'
+    Dim direcYasteroide8, direcXasteroide8
+    Dim asteroide8_PosY, asteroide8_PosX
+    direcYasteroide8= 0 : direcXasteroide8 = 0
+    with asteroide8.style
+    .position = "Absolute"
+    .top = -30
+    .left = -30
+    .width = 30
+    .height = 30:end with
+    '--------------------------------------------------------------------------------------Asteroide9'
+    Dim direcYasteroide9, direcXasteroide9
+    Dim asteroide9_PosY, asteroide9_PosX
+    direcYasteroide9= 0 : direcXasteroide9 = 0
+    with asteroide9.style
+    .position = "Absolute"
+    .top = -30
+    .left = -30
+    .width = 30
+    .height = 30:end with
+    '---------------------------------------------------------------------------------------ovni0'
+    Dim direcYovni0, direcXovni0
+    Dim ovni0_PosY, ovni0_PosX
+    direcYovni0= 0 : direcXovni0 = 0
+    with ovni0.style
+    .position = "Absolute"
+    .top = -300
+    .left = -450
+    .width = 60
+    .height = 35:end with
+    ovni0.src = "Imagenes/ovni.gif"
+    ovni0.title = 1
+    '-----------------------------------------------------------------------------------------------------------ovni1'
+    Dim direcYovni1, direcXovni1
+    Dim ovni1_PosY, ovni1_PosX
+    direcYovni1= 0 : direcXovni1 = 0
+    with ovni1.style
+    .position = "Absolute"
+    .top = -200
+    .left = -200
+    .width = 60
+    .height = 35:end with
+    ovni1.src = "Imagenes/ovni.gif"
+    ovni1.title = 100
+    '---------------------------------------------------------------------------------------ovni2'
+    Dim direcYovni2, direcXovni2
+    Dim ovni2_PosY, ovni2_PosX
+    direcYovni2= 0 : direcXovni2 = 0
+    with ovni2.style
+    .position = "Absolute"
+    .top = -400
+    .left = 500
+    .width = 60
+    .height = 35:end with
+    ovni2.src = "Imagenes/ovni.gif"
+    ovni2.title = 100
+    '---------------------------------------------------------------------------------------ovni3'
+    Dim direcYovni3, direcXovni3
+    Dim ovni3_PosY, ovni3_PosX
+    direcYovni3= 0 : direcXovni3 = 0
+    with ovni3.style
+    .position = "Absolute"
+    .top = -300
+    .left = 1000
+    .width = 60
+    .height = 35:end with
+    ovni3.src = "Imagenes/ovni.gif"
+    ovni3.title = 100
+    '---------------------------------------------------------------------------------------ovni4'
+    Dim direcYovni4, direcXovni4
+    Dim ovni4_PosY, ovni4_PosX
+    direcYovni4= 0 : direcXovni4 = 0
+    with ovni4.style
+    .position = "Absolute"
+    .top = -400
+    .left = 1500
+    .width = 60
+    .height = 35:end with
+    ovni4.src = "Imagenes/ovni.gif"
+    ovni4.title = 100
+    '----------------------------------------------------------------------------------------NaveMadre0'
+    Dim direcYnavemadre0, direcXnavemadre0
+    Dim navemadre0_PosY, navemadre0_PosX
+    direcYnavemadre0= 0 : direcXnavemadre0 = 0
+    with navemadre0.style
+    .position = "Absolute"
+    .top = 9999
+    .left = 9999
+    .width = 100
+    .height = 100:end with
+    navemadre0.src = "Imagenes/navea.png"
+    navemadre0.title = 1000
+    '----------------------------------------------------------------------------------------NaveMadre1'
+    Dim direcYnavemadre1, direcXnavemadre1
+    Dim navemadre1_PosY, navemadre1_PosX
+    direcYnavemadre1= 0 : direcXnavemadre1 = 0
+    with navemadre1.style
+    .position = "Absolute"
+    .top = 9999
+    .left = 9999
+    .width = 100
+    .height = 100:end with
+    navemadre1.src = "Imagenes/naveb.png"
+    navemadre1.title = 10000
+    '--------------------------------------------------------------------------------------Vida (objeto0)'
+    Dim direcYobjeto0, direcXobjeto0
+    Dim objeto0_PosY, objeto0_PosX
+    direcYobjeto0= 0 : direcXobjeto0 = 0
+    with objeto0.style
+    .position = "Absolute"
+    .top = 1500
+    .left = 1500
+    .width = 30
+    .height = 30:end with
+    objeto0.title = 0
+    '--------------------------------------------------------------------------------------Municion (objeto1)'
+    Dim direcYobjeto1, direcXobjeto1
+    Dim objeto1_PosY, objeto1_PosX
+    direcYobjeto1= 0 : direcXobjeto1 = 0
+    with objeto1.style
+    .position = "Absolute"
+    .top = 1500
+    .left = 500
+    .width = 50
+    .height = 50:end with
+    objeto1.title = 0
+    '--------------------------------------------------------------------------------------Escudo (objeto2)'
+    Dim direcYobjeto2, direcXobjeto2
+    Dim objeto2_PosY, objeto2_PosX
+    direcYobjeto2= 0 : direcXobjeto2 = 0
+    with objeto2.style
+    .position = "Absolute"
+    .width = 100
+    .height = 100
+    .top = 1000
+    .left = 1000:end with
+    objeto2.title = 1
+    '--------------------------------------------------------------------------------------------Panel_Puntos'
+    with Panel_Puntos.Style
+     .Position = "Absolute"
+     .Bottom = 50
+     .right = 50
+     .color = "#FF0040"
+     .fontsize = 60
+     End with
+    Public Sub Window_OnLoad()
+    End Sub
+     
+    Public Sub Window_OnUnLoad()
+    End Sub
+     
+    Public Sub Main()
+    PosY = cdbl(Limpiar(jugador1.style.top))
+     PosX = cdbl(Limpiar(jugador1.style.left))
+     
+    misil0_PosY = cdbl(Limpiar(misil0.style.top))
+    misil0_PosX = cdbl(Limpiar(misil0.style.left))
+     
+    asteroide0_PosY = Limpiar(asteroide0.style.top)
+    asteroide0_PosX = Limpiar(asteroide0.style.left)
+     
+    asteroide1_PosY = Limpiar(asteroide1.style.top)
+    asteroide1_PosX = Limpiar(asteroide1.style.left)
+     
+    asteroide2_PosY = Limpiar(asteroide2.style.top)
+    asteroide2_PosX = Limpiar(asteroide2.style.left)
+     
+    asteroide3_PosY = Limpiar(asteroide3.style.top)
+    asteroide3_PosX = Limpiar(asteroide3.style.left)
+     
+    asteroide4_PosY = Limpiar(asteroide4.style.top)
+    asteroide4_PosX = Limpiar(asteroide4.style.left)
+     
+    asteroide5_PosY = Limpiar(asteroide5.style.top)
+    asteroide5_PosX = Limpiar(asteroide5.style.left)
+     
+    asteroide6_PosY = Limpiar(asteroide6.style.top)
+    asteroide6_PosX = Limpiar(asteroide6.style.left)
+     
+    asteroide7_PosY = Limpiar(asteroide7.style.top)
+    asteroide7_PosX = Limpiar(asteroide7.style.left)
+     
+    asteroide8_PosY = Limpiar(asteroide8.style.top)
+    asteroide8_PosX = Limpiar(asteroide8.style.left)
+     
+    asteroide9_PosY = Limpiar(asteroide9.style.top)
+    asteroide9_PosX = Limpiar(asteroide9.style.left)
+     
+    objeto0_PosY = Limpiar(objeto0.style.top)
+    objeto0_PosX = Limpiar(objeto0.style.left)
+     
+    objeto1_PosY = Limpiar(objeto1.style.top)
+    objeto1_PosX = Limpiar(objeto1.style.left)
+     
+     
+    objeto2_PosY = Limpiar(objeto2.style.top)
+    objeto2_PosX = Limpiar(objeto2.style.left)
+     
+    ovni0_PosY = cdbl(Limpiar(ovni0.style.top))
+    ovni0_PosX = cdbl(Limpiar(ovni0.style.left))
+     
+    ovni1_PosY = cdbl(Limpiar(ovni1.style.top))
+    ovni1_PosX = cdbl(Limpiar(ovni1.style.left))
+     
+    ovni2_PosY = cdbl(Limpiar(ovni2.style.top))
+    ovni2_PosX = cdbl(Limpiar(ovni2.style.left))
+     
+    ovni3_PosY = cdbl(Limpiar(ovni3.style.top))
+    ovni3_PosX = cdbl(Limpiar(ovni3.style.left))
+     
+    ovni4_PosY = cdbl(Limpiar(ovni4.style.top))
+    ovni4_PosX = cdbl(Limpiar(ovni4.style.left))
+     
+     
+     
+    Call Ovnis_IA()
+     
+    Call UniversoEnAccion()
+     
+    if Juego_e = 1 Then
+    PosY = Limpiar(jugador1.style.Top) : PosX = Limpiar(jugador1.style.left)
+    jugador1.style.Top = PosY + DY : jugador1.style.Left = PosX + DX
+    end if
+     
+    '---------------------------------------------------------------------------------DIBUJAR OBJETOS'
+    if objeto0.Title > 0 Then
+    objeto0.style.top = objeto0_PosY + direcYobjeto0
+    objeto0.style.left = objeto0_PosX + direcXobjeto0
+    end if
+     
+    if objeto1.Title > 0 Then
+    objeto1.style.top = objeto1_PosY + direcYobjeto1
+    objeto1.style.left = objeto1_PosX + direcXobjeto1
+    end if
+     
+     
+    if objeto2.Title > 0 Then
+      if Protect_e = 0 then
+    objeto2.style.top = objeto2_PosY + direcYobjeto2
+    objeto2.style.left = objeto2_PosX + direcXobjeto2
+    end if
+    end if
+    '--------------------------------------------------------------------------------DIBUJAR ASTEROIDES'
+    asteroide0.style.top = asteroide0_PosY + direcYasteroide0
+    asteroide0.style.left = asteroide0_PosX + direcXasteroide0
+     
+    asteroide1.style.top = asteroide1_PosY + direcYasteroide1
+    asteroide1.style.left = asteroide1_PosX + direcXasteroide1
+     
+    asteroide2.style.top = asteroide2_PosY + direcYasteroide2
+    asteroide2.style.left = asteroide2_PosX + direcXasteroide2
+     
+    asteroide3.style.top = asteroide3_PosY + direcYasteroide3
+    asteroide3.style.left = asteroide3_PosX + direcXasteroide3
+     
+    asteroide4.style.top = asteroide4_PosY + direcYasteroide4
+    asteroide4.style.left = asteroide4_PosX + direcXasteroide4
+     
+    asteroide5.style.top = asteroide5_PosY + direcYasteroide5
+    asteroide5.style.left = asteroide5_PosX + direcXasteroide5
+     
+    asteroide6.style.top = asteroide6_PosY + direcYasteroide6
+    asteroide6.style.left = asteroide6_PosX + direcXasteroide6
+     
+     
+    asteroide7.style.top = asteroide7_PosY + direcYasteroide7
+    asteroide7.style.left = asteroide7_PosX + direcXasteroide7
+     
+    asteroide8.style.top = asteroide8_PosY + direcYasteroide8
+    asteroide8.style.left = asteroide8_PosX + direcXasteroide8
+     
+    asteroide9.style.top = asteroide9_PosY + direcYasteroide9
+    asteroide9.style.left = asteroide9_PosX + direcXasteroide9
+    '--------------------------------------------------------------------------------DIBUJAR OVNIS'
+    if ovni0.Title > 0 Then
+    ovni0.style.top = ovni0_PosY + direcYovni0
+    ovni0.style.left = ovni0_PosX + direcXovni0
+    end if
+    if ovni1.Title > 0 Then
+    ovni1.style.top = ovni1_PosY + direcYovni1
+    ovni1.style.left = ovni1_PosX + direcXovni1
+    end if
+    if ovni2.Title > 0 Then
+    ovni2.style.top = ovni2_PosY + direcYovni2
+    ovni2.style.left = ovni2_PosX + direcXovni2
+    end if
+    if ovni3.Title > 0 Then
+    ovni3.style.top = ovni3_PosY + direcYovni3
+    ovni3.style.left = ovni3_PosX + direcXovni3
+    end if
+    if ovni4.Title > 0 Then
+    ovni4.style.top = ovni4_PosY + direcYovni4
+    ovni4.style.left = ovni4_PosX + direcXovni4
+    end if
+    '---------------------------------------------------------------------------DIBUJAR MISIL1'
+    if Disparo_e = 1 Then
+     misil0.Style.Top = Limpiar(misil0.Style.Top) - (7)
+       End if
+     
+    if Limpiar(misil0.Style.Top) < (0) Then : Disparo_e = 0 : Call RestaurarMisil() : END IF
+     
+      '-------------------------------------------------------------------------DIBUJAR PROTECT'
+    if Protect_e = 1 then
+      objeto2.style.top = Limpiar(jugador1.style.top) - 25
+      objeto2.style.left = Limpiar(jugador1.style.left) - 25
+      end if
+    '---------------------------------------------------------------------------------------Imprimir PUNTOS'
+    Panel_Puntos.InnerHTML = "<b>" & Puntos & "</b>"
+     
+     
+    '-----------------------------------------------------------------------------Coliciones Ateroides / Jugador1'
+    if Juego_e = 1 Then
+     
+      if Protect_e < 1 then
+     
+        if Coliciones(PosX,50,PosY,50,asteroide4_PosX,30,asteroide4_PosY,30) = "True" Then 
+    Call Fuiste("asteroide")                                  'asteroide4 no entiendo que ***** te pasa?!¡?!'
+       End if
+     
+        if Coliciones(PosX,50,PosY,50,asteroide0_PosX,30,asteroide0_PosY,30) = "True" Then 
+         Call Fuiste("asteroide")  
+       End if
+     
+        if Coliciones(PosX,50,PosY,50,asteroide1_PosX,30,asteroide1_PosY,30) = "True" Then 
+        Call Fuiste("asteroide")  
+       End if
+     
+        if Coliciones(PosX,50,PosY,50,asteroide2_PosX,30,asteroide2_PosY,30) = "True" Then 
+        Call Fuiste("asteroide")  
+       End if
+     
+        if Coliciones(PosX,50,PosY,50,asteroide3_PosX,30,asteroide3_PosY,30) = "True" Then 
+        Call Fuiste("asteroide")  
+        End if
+     
+         if Coliciones(PosX,50,PosY,50,asteroide5_PosX,30,asteroide5_PosY,30) = "True" Then 
+        Call Fuiste("asteroide")  
+        End if
+     
+         if Coliciones(PosX,50,PosY,50,asteroide6_PosX,30,asteroide6_PosY,30) = "True" Then 
+        Call Fuiste("asteroide")  
+        End if
+     
+         if Coliciones(PosX,50,PosY,50,asteroide7_PosX,30,asteroide7_PosY,30) = "True" Then 
+        Call Fuiste("asteroide")  
+        End if
+     
+         if Coliciones(PosX,50,PosY,50,asteroide8_PosX,30,asteroide8_PosY,30) = "True" Then 
+        Call Fuiste("asteroide")  
+        End if
+     
+         if Coliciones(PosX,50,PosY,50,asteroide9_PosX,30,asteroide9_PosY,30) = "True" Then 
+        Call Fuiste("asteroide")  
+        End if
+      end if
+    '--------------------------------------------------------------------------------------COLICIONES Jugador0 OVNIS'
+     
+    if Coliciones(PosX,50,PosY,50,ovni0_PosX,30,ovni0_PosY,30) = "True" And ovni0.Title > 0 Then
+      if Protect_e = 0 then
+    Call Fuiste("ovni")
+    else
+    ovni0.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni0.Title = 0 : TimeOff = Window.SetTimeOut("Restaurar_ovni0()",1000)
+    end if
+      End if 
+     
+     
+    if Coliciones(PosX,50,PosY,50,ovni1_PosX,30,ovni1_PosY,30) = "True" And ovni1.Title > 0 Then
+      if Protect_e = 0 then
+    Call Fuiste("ovni") 
+    else 
+    ovni1.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni1.Title = 0 : TimeOff = Window.SetTimeOut("Restaurar_ovni1()",1000)
+    end if
+      End if
+     
+      if Coliciones(PosX,50,PosY,50,ovni2_PosX,30,ovni2_PosY,30) = "True" And ovni2.Title > 0 Then
+        if Protect_e = 0 then
+    Call Fuiste("ovni")
+    else
+    ovni2.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni2.Title = 0 : TimeOff = Window.SetTimeOut("Restaurar_ovni2()",1000)
+    end if
+      End if
+     
+     
+      if Coliciones(PosX,50,PosY,50,ovni3_PosX,30,ovni3_PosY,30) = "True" And ovni3.Title > 0 Then
+      if Protect_e = 0 then 
+    Call Fuiste("ovni")
+    else 
+    ovni3.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni3.Title = 0 : TimeOff = Window.SetTimeOut("Restaurar_ovni3()",1000)
+      End if
+     end if
+     
+     
+      if Coliciones(PosX,50,PosY,50,ovni4_PosX,30,ovni4_PosY,30) = "True" And ovni4.Title > 0 Then
+        if Protect_e = 0 then
+    Call Fuiste("ovni") 
+    else
+    ovni4.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni4.Title = 0 : TimeOff = Window.SetTimeOut("Restaurar_ovni4()",1000)
+      End if
+    end if
+     
+    end if '------------Protect IF'
+     
+    '---------------------------------------------------------------------------------------COLICIONES MISIL0 OVNIS'
+    if Coliciones(misil0_PosX,30,misil0_PosY,50,ovni0_PosX,60,ovni0_PosY,35) = "True" And ovni0.Title > 0 Then 
+    ovni0.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni0.Title = 0 : Call RestaurarMisil() : TimeOff = Window.SetTimeOut("Restaurar_ovni0()",1000)
+    end if
+    if Coliciones(misil0_PosX,30,misil0_PosY,50,ovni1_PosX,60,ovni1_PosY,35) = "True" And ovni1.Title > 0 Then
+    ovni1.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni1.Title = 0 : Call RestaurarMisil() : TimeOff = Window.SetTimeOut("Restaurar_ovni1()",1000)
+    end if
+    if Coliciones(misil0_PosX,30,misil0_PosY,50,ovni2_PosX,60,ovni2_PosY,35) = "True" And ovni2.Title > 0 Then 
+    ovni2.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni2.Title = 0 : Call RestaurarMisil() : TimeOff = Window.SetTimeOut("Restaurar_ovni2()",1000)
+    end if
+    if Coliciones(misil0_PosX,30,misil0_PosY,50,ovni3_PosX,60,ovni3_PosY,35) = "True" And ovni3.Title > 0 Then
+    ovni3.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1)  :  ovni3.Title = 0 : Call RestaurarMisil() : TimeOff = Window.SetTimeOut("Restaurar_ovni3()",1000)
+    end if
+    if Coliciones(misil0_PosX,30,misil0_PosY,50,ovni4_PosX,60,ovni4_PosY,35) = "True" And ovni4.Title > 0 Then
+    ovni4.Src = "Imagenes/explocion.gif" : MusicaMaestro = Window.SetTimeOut("SonidosOvni.Src = ""Sonidos/explocion.wav""",1) :  ovni4.Title = 0 : Call RestaurarMisil() : TimeOff = Window.SetTimeOut("Restaurar_ovni4()",1000)
+    end if
+     
+    '----------------------------------------colicion jugador1 escudo objeto2'
+    if Coliciones(PosX,50,PosY,50,objeto2_PosX,100,objeto2_PosY,100) = "True" And objeto2.Title = 1 Then
+      if Protect_e = 0 Then
+      SonidosObjeto.Src = "Sonidos/escudo.wav"
+    Protect_e = 1 
+     DesProtecTime = window.setTimeOut("DesProtect()",10000)
+      end if
+      End if
+     
+     
+     
+     
+     
+     
+    End Sub
+     
+    '-------------------------------------------------------UNIVERSO EN ACCION---------------------------------------'
+    Public Sub UniversoEnAccion()
+    '-----------------------------------asteroide0'
+    if Limpiar(asteroide0.style.top) > 1100 Then
+      direcYasteroide0 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide0.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY0",2000)
+    End if
+     
+    if Limpiar(asteroide0.style.left) > 1300 Then
+      direcXasteroide0 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide0.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX0",2000)
+    End if
+    '-----------------------------------asteroide1'
+    if Limpiar(asteroide1.style.top) > 1100 Then
+      direcYasteroide1 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide1.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY1",2000)
+    End if
+     
+    if Limpiar(asteroide1.style.left) > 1300 Then
+      direcXasteroide1 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide1.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX1",2000)
+    End if
+    '--------------------------------------------------asteroide2'
+    if Limpiar(asteroide2.style.top) > 1100 Then
+      direcYasteroide2 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide2.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY2",2000)
+    End if
+     
+    if Limpiar(asteroide2.style.left) > 1300 Then
+      direcXasteroide2 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide2.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX2",2000)
+    End if
+    '-----------------------------------------------------asteroide3'
+    if Limpiar(asteroide3.style.top) > 1100 Then
+      direcYasteroide3 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide3.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY3",2000)
+    End if
+     
+    if Limpiar(asteroide3.style.left) > 1300 Then
+      direcXasteroide3 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide3.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX3",2000)
+    End if
+    '-------------------------------------------------------asteroide4'
+    if Limpiar(asteroide4.style.top) > 1100 Then
+      direcYasteroide4 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide4.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY4",2000)
+    End if
+     
+    if Limpiar(asteroide4.style.left) > 1300 Then
+      direcXasteroide4 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide4.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX4",2000)
+    End if
+    '-------------------------------------------------------asteroide5'
+    if Limpiar(asteroide5.style.top) > 1100 Then
+      direcYasteroide5 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide5.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY5",2000)
+    End if
+     
+    if Limpiar(asteroide5.style.left) > 1300 Then
+      direcXasteroide5 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide5.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX5",2000)
+    End if
+    '-------------------------------------------------------asteroide6'
+    if Limpiar(asteroide6.style.top) > 1100 Then
+      direcYasteroide6 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide6.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY6",2000)
+    End if
+     
+    if Limpiar(asteroide6.style.left) > 1300 Then
+      direcXasteroide6 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide6.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX6",2000)
+    End if
+    '-------------------------------------------------------asteroide7'
+    if Limpiar(asteroide7.style.top) > 1100 Then
+      direcYasteroide7 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide7.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY7",2000)
+    End if
+     
+    if Limpiar(asteroide7.style.left) > 1300 Then
+      direcXasteroide7 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide7.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX7",2000)
+    End if
+    '-------------------------------------------------------asteroide8'
+    if Limpiar(asteroide8.style.top) > 1100 Then
+      direcYasteroide8 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide8.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY8",2000)
+    End if
+     
+    if Limpiar(asteroide8.style.left) > 1300 Then
+      direcXasteroide8 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide8.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX8",2000)
+    End if
+    '-------------------------------------------------------asteroide9'
+    if Limpiar(asteroide9.style.top) > 1100 Then
+      direcYasteroide9 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide9.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegAsteroidY9",2000)
+    End if
+     
+    if Limpiar(asteroide9.style.left) > 1300 Then
+      direcXasteroide9 = -int(RND*10)
+    End if
+    if (Limpiar(asteroide9.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegAsteroidX9",2000)
+    End if
+    '----------------------------------------------------------objeto0'
+     
+    if Limpiar(objeto0.style.top) > 2300 Then
+      direcYobjeto0 = -int(RND*10)
+    End if
+    if (Limpiar(objeto0.style.top)) < 0  Then
+    llamar = window.setTimeOut("NegobjetoY0",4000)
+    End if
+     
+    if Limpiar(objeto0.style.left) > 2300 Then
+      direcXobjeto0 = -int(RND*10)
+    End if
+    if (Limpiar(objeto0.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegobjetoX0",4000)
+    End if
+     
+    '-----------------------------------------------------------objeto1'
+    if Limpiar(objeto1.style.top) > 2200 Then
+      direcYobjeto1 = -int(RND*10)
+    End if
+    if (Limpiar(objeto1.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegobjetoY1",4000)
+    End if
+     
+    if Limpiar(objeto1.style.left) > 2300 Then
+      direcXobjeto1 = -int(RND*10)
+    End if
+    if (Limpiar(objeto1.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegobjetoX1",4000)
+    End if
+     
+    '----------------------------------------------------objeto2'
+    if Limpiar(objeto2.style.top) > 2000 Then
+      direcYobjeto2 = -int(RND*5)
+    End if
+    if (Limpiar(objeto2.style.top)) =< 0  Then
+    llamar = window.setTimeOut("NegobjetoY2",4000)
+    End if
+     
+    if Limpiar(objeto2.style.left) > 3000 Then
+      direcXobjeto2 = -int(RND*5)
+    End if
+    if (Limpiar(objeto2.style.left)) =< 0 Then
+    llamard = window.setTimeOut("NegobjetoX2",4000)
+    End if
+    End Sub
+     
+     
+     
+    Public Sub NegAsteroidY0
+    if Limpiar(asteroide0.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide0.style.top = 0
+    direcYasteroide0 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX0
+    if Limpiar(asteroide0.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide0.style.left = 0
+    direcXasteroide0 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidY1
+    if Limpiar(asteroide1.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide1.style.top = 0
+    direcYasteroide1 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX1
+    if Limpiar(asteroide1.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide1.style.left = 0
+    direcXasteroide1 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidY2
+    if Limpiar(asteroide2.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide2.style.top = 0
+    direcYasteroide2 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX2
+    if Limpiar(asteroide2.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide2.style.left = 0
+    direcXasteroide2 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidY3
+    if Limpiar(asteroide3.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide3.style.top = 0
+    direcYasteroide3 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX3
+    if Limpiar(asteroide3.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide3.style.left = 0
+    direcXasteroide3 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidY4
+    if Limpiar(asteroide4.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide4.style.top = 0
+    direcYasteroide4 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX4
+    if Limpiar(asteroide4.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide4.style.left = 0
+    direcXasteroide4 = int(RND*15)
+    End if
+    End Sub
+     
+     
+     
+    Public Sub NegAsteroidY5
+    if Limpiar(asteroide5.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide5.style.top = 0
+    direcYasteroide5 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX5
+    if Limpiar(asteroide5.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide5.style.left = 0
+    direcXasteroide5 = int(RND*15)
+    End if
+    End Sub
+     
+     
+    Public Sub NegAsteroidY6
+    if Limpiar(asteroide6.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide6.style.top = 0
+    direcYasteroide6 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX6
+    if Limpiar(asteroide6.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide6.style.left = 0
+    direcXasteroide6 = int(RND*15)
+    End if
+    End Sub
+     
+    Public Sub NegAsteroidY7
+    if Limpiar(asteroide4.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide7.style.top = 0
+    direcYasteroide7 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX7
+    if Limpiar(asteroide7.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide7.style.left = 0
+    direcXasteroide7 = int(RND*15)
+    End if
+    End Sub
+     
+    Public Sub NegAsteroidY8
+    if Limpiar(asteroide8.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide8.style.top = 0
+    direcYasteroide8 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX8
+    if Limpiar(asteroide8.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide8.style.left = 0
+    direcXasteroide8 = int(RND*15)
+    End if
+    End Sub
+     
+     
+    Public Sub NegAsteroidY9
+    if Limpiar(asteroide9.style.top) > 0 Then
+    Exit Sub
+    Else
+      asteroide9.style.top = 0
+    direcYasteroide9 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegAsteroidX9
+    if Limpiar(asteroide9.style.left) > 0 Then
+    Exit Sub
+    Else
+     asteroide9.style.left = 0
+    direcXasteroide9 = int(RND*15)
+    End if
+    End Sub
+     
+     
+    Public Sub NegobjetoY0
+    if Limpiar(objeto0.style.top) > 0 Then
+    Exit Sub
+    Else
+      objeto0.style.top = 0
+    direcYobjeto0 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegobjetoX0
+    if Limpiar(objeto0.style.left) > 0 Then
+    Exit Sub
+    Else
+     objeto0.style.left = 0
+    direcXobjeto0 = int(RND*15)
+    End if
+    End Sub
+     
+    Public Sub NegobjetoY1
+    if Limpiar(objeto1.style.top) > 0 Then
+    Exit Sub
+    Else
+      objeto1.style.top = 0
+    direcYobjeto1 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegobjetoX1
+    if Limpiar(objeto1.style.left) > 0 Then
+    Exit Sub
+    Else
+     objeto1.style.left = 0
+    direcXobjeto1 = int(RND*15)
+    End if
+    End Sub
+     
+    Public Sub NegobjetoY2
+    if Limpiar(objeto2.style.top) > 0 Then
+    Exit Sub
+    Else
+      objeto2.style.top = 0
+    direcYobjeto2 = int(RND*15)
+    End if
+    End Sub
+    Public Sub NegobjetoX2
+    if Limpiar(objeto2.style.left) > 0 Then
+    Exit Sub
+    Else
+     objeto2.style.left = 0
+    direcXobjeto2 = int(RND*10)
+    End if
+    End Sub
+    '-----------------------------------------------------------------------------------------Inteligencia Artificial'
+    Public Sub Ovnis_IA()
+    if ovni0.title > 0 Then
+      if PosY >= ovni0_PosY Then
+                direcYovni0 = 4
+             else
+                direcYovni0 = -4
+              end if
+     
+        if PosX >= ovni0_PosX Then
+                direcXovni0 = 4
+             else
+                direcXovni0 =  -4
+              end if
+    end if
+     
+    if ovni1.title > 0 Then
+      if PosY >= ovni1_PosY Then
+                direcYovni1 = 4
+             else
+                direcYovni1 = -4
+              end if
+     
+        if PosX >= ovni1_PosX Then
+                direcXovni1 = 4
+             else
+                direcXovni1 =  -4
+              end if
+    end if
+     
+    if ovni2.title > 0 Then
+      if PosY >=  ovni2_PosY Then
+                direcYovni2 = 4
+             else
+                direcYovni2 = -4
+              end if
+     
+        if PosX >= ovni2_PosX Then
+                direcXovni2 = 4
+             else
+                direcXovni2 =  -4
+              end if
+    end if
+     
+    if ovni3.title > 0 Then
+      if PosY >= ovni3_PosY Then
+                direcYovni3 = 4
+             else
+                direcYovni3 = -4
+              end if
+     
+        if PosX >= ovni3_PosX Then
+                direcXovni3 = 4
+             else
+                direcXovni3 =  -4
+              end if
+    end if
+     
+    if ovni4.title > 0 Then
+      if PosY >= ovni4_PosY Then
+                direcYovni4 = 4
+             else
+                direcYovni4 = -4
+              end if
+     
+        if PosX >= ovni4_PosX Then
+                direcXovni4 = 4
+             else
+                direcXovni4 =  -4
+              end if
+    end if
+    End SUb 
+     
+    Public Sub Desprotect()
+    MusicaMaestro = Window.SetTimeOut("SonidosObjeto.Src = ""Sonidos/drop.wav""",1)
+    Protect_e = 0 : objeto2.style.top = -100  : objeto2.style.left = int(rnd*2000) - int(rnd*6000)
+    End Sub
+     
+    Public Sub Restaurar_ovni0()
+    ovni0.Style.Top = -int(rnd*500) : ovni0.Style.Left = int(rnd*500) : Puntos = Puntos + int(rnd*25)
+    ovni0.Title = 100
+    ovni0.Src = "Imagenes/ovni.gif"
+    End Sub
+    Public Sub Restaurar_ovni1()
+    ovni1.Style.Top = -int(rnd*500) : ovni1.Style.Left = int(rnd*500) : Puntos = Puntos + int(rnd*25)
+    ovni1.Title = 100
+    ovni1.Src = "Imagenes/ovni.gif"
+    End Sub
+    Public Sub Restaurar_ovni2()
+    ovni2.Style.Top = -int(rnd*500) : ovni2.Style.Left = int(rnd*500) : Puntos = Puntos + int(rnd*25)
+    ovni2.Title = 100
+    ovni2.Src = "Imagenes/ovni.gif"
+    End Sub
+    Public Sub Restaurar_ovni3()
+    ovni3.Style.Top = -int(rnd*500) : ovni3.Style.Left = int(rnd*500) : Puntos = Puntos + int(rnd*25)
+    ovni3.Title = 100
+    ovni3.Src = "Imagenes/ovni.gif"
+    End Sub
+    Public Sub Restaurar_ovni4()
+    ovni4.Style.Top = -int(rnd*500) : ovni4.Style.Left = int(rnd*500) : Puntos = Puntos + int(rnd*25)
+    ovni4.Title = 100
+    ovni4.Src = "Imagenes/ovni.gif"
+    End Sub
+     
+    Sub Disparar()
+    if Juego_e <> 1 Then : Exit Sub : End if
+    If Disparo_e = 0 Or Limpiar(misil0.Style.Top) < 0 Then
+    misil0.Style.Top = jugador1.Style.Top : misil0.Style.Left = Limpiar(jugador1.Style.Left) + 15
+    Disparo_e = 1
+    MusicaMaestro = Window.SetTimeOut("SonidosMisil.Src = ""Sonidos/misil.wav""",1)
+    End If
+    End Sub
+    Sub RestaurarMisil()
+    Disparo_e = 0: Misil0.Style.Top = 999
+    End Sub
+     
+     
+     
+     
+    Public Sub Fuiste(quien)
+    Juego_e = 666
+    if quien = "ovni" then
+    jugador1.Src = "Imagenes/vacio.png"
+    SonidosJugador1.Src = "Sonidos/nuevovni.wav"
+    jugador1.style.top = -999
+    else
+    SonidosJugador1.Src = "Sonidos/explocion.wav"
+    jugador1.Src = "Imagenes/explocion.gif"
+    Secuestrar = Window.SetTimeOut("jugador1.style.top = 9999",1000)
+    end if
+    MusicaMaestro = Window.SetTimeOut("SonidosJugador1.Src = ""Sonidos/muerto.wav""",1000)
+     
+     
+      MusicaMaestro = Window.SetTimeOut("SonidosAmbiente.Src = ""Sonidos/lanada.wav""",3000)
+    TimeOff = Window.SetTimeOut("Perdida()",1000) 
+    End Sub
+    Sub Perdida()
+    jugador1.Src = "Imagenes/vacio.png"
+    End Sub
+     
+     
+     
+     
+     
+     
+    Public Sub Start()
+    if TimerUnoE = 0 Then
+      TimerUnoE = 1
+    Logo1.Style.Display = "none" : Logo1.Src = "Imagenes/vacio.png" : Logo1.Style.Top = -9999
+    SonidosAmbiente.SRC = "Sonidos/ambiente2.wav"
+    SonidosJugador1.SRC = "Sonidos/nacimiento.wav"
+    jugador1.style.top = 500
+    jugador1.style.left = 500
+    direcYobjeto0 = 10 : direcXobjeto0 = 10
+    direcYobjeto1 = -int(RND*10) : direcXobjeto1 = -int(RND*10)
+    direcYobjeto2 = int(RND*10) : direcXobjeto2 = int(RND*10)
+    direcYasteroide0 = int(RND*15) : direcXasteroide0 = int(RND*15)
+    direcYasteroide1 = int(RND*15) : direcXasteroide1 = int(RND*15)
+    direcYasteroide2 = int(RND*15) : direcXasteroide2 = int(RND*15)
+    direcYasteroide3 = int(RND*15) : direcXasteroide3 = int(RND*15)
+    direcYasteroide4 = int(RND*15) : direcXasteroide4 = int(RND*15)
+    direcYasteroide5 = int(RND*15) : direcXasteroide5 = int(RND*15)
+    direcYasteroide6 = int(RND*15) : direcXasteroide6 = int(RND*15)
+    direcYasteroide7 = int(RND*15) : direcXasteroide7 = int(RND*15)
+    direcYasteroide8 = int(RND*15) : direcXasteroide8 = int(RND*15)
+    direcYasteroide9 = int(RND*15) : direcXasteroide9 = int(RND*15)
+    ovni0.Title = 1
+    ovni1.Title = 1
+    ovni2.Title = 1
+    ovni3.Title = 1
+    ovni4.Title = 1
+     
+    Juego_e = 1
+    Tempo1 = Window.SetInterval("Main()",30)
+    End if
+    End Sub
+     
+    Public Sub Pause()
+    if TimerUnoE = 1 Then
+      TimerUnoE = 0
+    Window.ClearInterval(Timer1)
+    End if
+    End Sub
+     
+    Public Sub Quit()
+    End Sub
+     
+     
+     Sub Document_OnKeyDown()
+        Select case Window.Event.KeyCode
+        case 13:Call Start()
+        case 27:Call Pause()
+        case 32:Call Disparar()
+        case 38:DY=-6
+        case 40:DY=6
+        case 37:DX=-6
+        case 39:DX=6
+        End Select   
+     End Sub   
+     Sub Document_OnKeyUp()
+        Select case  Window.Event.KeyCode
+        case 38:if DY<>6 then DY=0
+        case 40:if DY<>-6 then DY=0
+        case 37:if DX<>6 then DX=0
+        case 39:if DX<>-6 then DX=0
+        End Select
+     End Sub  
+     
+     
+    Public Function Limpiar(s)
+    Limpiar = Replace(s,"px","")
+    End Function
+     
+    Function Coliciones(PosXUno, AnchoUno, PosYUno, LargoUno,PosXDos, AnchoDos, PosYDos, LargoDos)
+    If  (Cdbl(PosXUno) + Cdbl(AnchoUno)) > (Cdbl(PosXDos))_
+     And (cdbl(PosXUno)) < (Cdbl(PosXDos) + Cdbl(AnchoDos))_
+      And (cdbl(PosYUno) + cdbl(LargoUno)) > (cdbl(PosYDos))_
+       And (cdbl(PosYUno)) < (cdbl(PosYDos) + Cdbl(AnchoDos)) Then
+    Coliciones = "True"
+    Else
+    Coliciones = "False"
+    End If
+    End Function
+     </Script>
+     

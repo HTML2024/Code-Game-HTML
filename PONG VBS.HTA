@@ -1,0 +1,147 @@
+﻿<Title>Pong VBScript by JohnConnor</Title>
+<HTA:APPLICATION
+ID = "PONGVBS"
+APPLICATIONNAME="Pong Game in VBScript"
+BORDER = "Dialog"
+CAPTION = "Yes"
+RESIZE = "no"
+ICON = "icono.ico"
+SHOWINTASKBAR = "No"
+SINGLEINSTANCE = "Yes"
+SYSMENU = "No"
+WINDOWSTATE = "normal"
+SCROLL = "no"
+SCROLLFLAT = "no"
+VERSION = "1.0"
+INNERBORDER = "no"
+SELECTION = "yes"
+MAXIMIZEBUTTON = "no"
+MINIMIZEBUTTON = "no"
+NAVIGABLE = "yes"
+CONTEXTMENU = "yes"
+BORDERSTYLE = "normal"></HTA>
+<BODY TOPMARGIN="0" LEFTMARGIN="0" BGColor="Black">
+<DIV ID="Menu_Principal" Style="">Pong Game VBScript<DIV ID="Ini_MSJ" Style="Display: InLine;">Pulse (ENTER) para comenzar.</DIV></DIV>
+<DIV ID="Pantalla_De_Juego" Width="100%" Height="100%">
+<DIV ID="JugadorUno"  Style="Background-Color: White;">0</DIV>
+<DIV ID="JugadorDos"  Style="Background-Color: White;">0</DIV>
+<DIV ID="Pelota" Style="Background-Color: White;"></DIV>
+</DIV>
+<Input Type="Hidden" ID="IniMSJV" Value="A">
+<Input Type="Hidden" ID="DireccionPelotaX" Value="1">
+<Input Type="Hidden" ID="DireccionPelotaY" Value="1">
+</BODY>
+<Script Language="VBScript">
+Sub Window_OnLoad
+Self.ResizeTo 350,250
+Pantalla_De_Juego.Style.Display = "None"
+Menu_Principal.Style.Color = "White"
+Menu_Principal.Style.FontSize = "30"
+Menu_Principal.Style.Position = "Absolute"
+Menu_Principal.Style.Top = "70"
+Menu_Principal.Style.Left = "45"
+Ini_MSJ.Style.FontSize = "12"
+Ini_MSJ.Style.Position = "Absolute"
+Ini_MSJ.Style.Top = "80"
+Ini_MSJ.Style.Left = "60"
+IniMSJ = Window.SetInterval("IniMSJPre",700)
+
+' --- Configuracion JugadorDos --- *
+JugadorUno.Style.Position = "Absolute"
+JugadorUno.Style.Width = "15"
+JugadorUno.Style.Height = "60"
+JugadorUno.Style.Top = "40"
+JugadorUno.Style.Left = "10"
+
+' --- Configuracion de JugadorDos --- *
+JugadorDos.Style.Position = "Absolute"
+JugadorDos.Style.Width = "15"
+JugadorDos.Style.Height = "60"
+JugadorDos.Style.Top = "90"
+JugadorDos.Style.Left = "320"
+IniMSJ = Window.SetInterval("IniMSJPre",700)
+
+' --- Configuracion de Pelota --- *
+Pelota.Style.Position = "Absolute"
+Pelota.Style.Width = "15"
+Pelota.Style.Height = "10"
+Pelota.Style.Top = "100"
+Pelota.Style.Left = "100"
+End Sub
+
+Sub Document_OnKeyPress
+If Window.Event.KeyCode = "27" Then : Self.Close : End If
+If Window.Event.KeyCode = "13" Then : Comenzar : Movimiento_Pelota() : End If
+
+If Window.Event.KeyCode = "119" Then : MoverJugadorUno(-5) : End If
+If Window.Event.KeyCode = "115" Then : MoverJugadorUno(5) : End If
+
+If Window.Event.KeyCode = "105" Then : MoverJugadorDos(-5) : End If
+If Window.Event.KeyCode = "107" Then : MoverJugadorDos(5) : End If
+End Sub
+
+Sub Comenzar
+Menu_Principal.Style.Display = "None"
+Pantalla_De_Juego.Style.Display = "InLine"
+End Sub
+
+Sub MoverJugadorUno(Mov)
+JugadorUno.Style.Top = CInt(Replace(JugadorUno.Style.Top,"px","")) + CInt(Mov)
+End Sub
+
+Sub MoverJugadorDos(Mov)
+JugadorDos.Style.Top = CInt(Replace(JugadorDos.Style.Top,"px","")) + CInt(Mov)
+End Sub
+
+Sub Movimiento_Pelota
+
+If Replace(Pelota.Style.Top,"px","") > 200 Then
+DireccionPelotaX.Value = CInt(-1)
+End If
+If Replace(Pelota.Style.Top,"px","") < 1 Then
+DireccionPelotaX.Value = CInt(+1)
+End If
+If Replace(Pelota.Style.Left,"px","") > 330 Then
+DireccionPelotaY.Value = CInt(-1)
+JugadorUno.InnerHtml = JugadorUno.InnerHtml + CInt(1)
+End If
+If Replace(Pelota.Style.Left,"px","") < 0 Then
+DireccionPelotaY.Value = CInt(+1)
+JugadorDos.InnerHtml = JugadorDos.InnerHtml + CInt(1)
+End If
+If Coliciones(Replace(JugadorUno.Style.Left,"px",""), Replace(JugadorUno.Style.Width,"px",""), Replace(JugadorUno.Style.Top,"px","")+2,Replace(JugadorUno.Style.Height,"px",""), Replace(Pelota.Style.Left,"px",""), Replace(Pelota.Style.Width,"px",""), Replace(Pelota.Style.Top,"px",""), Replace(Pelota.Style.Height,"px","")) = "Verdadero" Then
+Pelota.Style.BackgroundColor = "Yellow"
+DireccionPelotaY.Value = CInt(+1)
+Else
+Pelota.Style.BackgroundColor = "White"
+End If
+If Coliciones(Replace(JugadorDos.Style.Left,"px",""), Replace(JugadorDos.Style.Width,"px",""), Replace(JugadorDos.Style.Top,"px","")+2,Replace(JugadorDos.Style.Height,"px",""), Replace(Pelota.Style.Left,"px",""), Replace(Pelota.Style.Width,"px",""), Replace(Pelota.Style.Top,"px",""), Replace(Pelota.Style.Height,"px","")) = "Verdadero" Then
+Pelota.Style.BackgroundColor = "Yellow"
+DireccionPelotaY.Value = CInt(-1)
+Else
+Pelota.Style.BackgroundColor = "White"
+End If
+
+Pelota.Style.Top = Cint(Replace(Pelota.Style.Top,"px","")) + Cint(DireccionPelotaX.Value)
+Pelota.Style.Left = Cint(Replace(Pelota.Style.Left,"px","")) + Cint(DireccionPelotaY.Value)
+MP = Window.SetTimeOut("Movimiento_Pelota",1)
+End Sub
+
+Function Coliciones(x1, width1, y1, height1,x2, width2, y2, height2)
+If  (CInt(x1) + CInt(width1)) > (CInt(x2)) and (CInt(x1)) < (CInt(x2) + CInt(width2)) And (CInt(y1) + CInt(height1)) > (CInt(y2)) and (CInt(y1)) < (CInt(y2) + CInt(height2)) Then
+Coliciones = "Verdadero"
+Else
+Coliciones = "Falso"
+End If
+End Function
+
+Sub IniMSJPre
+If IniMSJV.Value = "A" then
+Ini_MSJ.Style.Display = "None"
+IniMSJV.Value = "B" 
+Else
+Ini_MSJ.Style.Display = "Inline"
+IniMSJV.Value = "A" 
+End If
+End Sub
+</Script>
